@@ -1,29 +1,20 @@
-#!/usr/bin/env python3
+# src/autotweet/cli.py
+from __future__ import annotations
+
 import sys
-import os
-from pathlib import Path
-from dotenv import load_dotenv
+
 import tweepy
 
-script_dir = Path(__file__).parent
-env_path = script_dir / '.env.local'
-load_dotenv(dotenv_path=env_path, override=True)
-
-# --- CONFIGURATION ---
-API_KEY = os.getenv('TWITTER_API_KEY')
-API_SECRET = os.getenv('TWITTER_API_KEY_SECRET')
-ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-ACCESS_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
-
-TWEET_LIMIT = 280  # basic counter (X is more complex, but this is good enough)
+from .config import load_secrets, TWEET_LIMIT
 
 
 def create_client() -> tweepy.Client:
+    secrets = load_secrets()
     return tweepy.Client(
-        consumer_key=API_KEY,
-        consumer_secret=API_SECRET,
-        access_token=ACCESS_TOKEN,
-        access_token_secret=ACCESS_SECRET
+        consumer_key=secrets["TWITTER_API_KEY"],
+        consumer_secret=secrets["TWITTER_API_KEY_SECRET"],
+        access_token=secrets["ACCESS_TOKEN"],
+        access_token_secret=secrets["ACCESS_TOKEN_SECRET"],
     )
 
 
@@ -52,14 +43,12 @@ def interactive_compose() -> str | None:
 
     while True:
         try:
-            # Visual prompt like Python REPL: >>> for first line, ... for others
             prompt = ">>> " if not lines else "... "
             line = input(prompt)
         except EOFError:
             print("\nAborted.")
             return None
 
-        # Handle commands
         if line.strip() == "/quit":
             print("Aborted.")
             return None
@@ -74,7 +63,6 @@ def interactive_compose() -> str | None:
                 continue
             return tweet_text
 
-        # Normal text line
         lines.append(line)
         tweet_text = "\n".join(lines)
         length = len(tweet_text)
@@ -87,8 +75,8 @@ def interactive_compose() -> str | None:
             print(f"[{length} chars, {remaining} left]")
 
 
-def main():
-    # --- Mode 1: no args → interactive compose mode ---
+def main() -> None:
+    # Mode 1: no args → interactive compose mode
     if len(sys.argv) == 1:
         tweet_text = interactive_compose()
         if tweet_text is None:
@@ -99,18 +87,14 @@ def main():
             print(f"❌ Error: {e}")
         return
 
-    # --- Mode 2: with args → one-liner via CLI ---
+    # Mode 2: with args → one-liner via CLI
     tweet_text = " ".join(sys.argv[1:])
     if not tweet_text.strip():
         print("Error: No text provided.")
-        print("Usage: python tweet.py \"Hello World\"")
+        print("Usage: autotweet \"Hello World\"")
         return
 
     try:
         send_tweet(tweet_text)
     except Exception as e:
-        print(f"❌ Erroxr: {e}")
-
-
-if __name__ == "__main__":
-    main()
+        print(f"❌ Error: {e}")
