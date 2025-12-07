@@ -4,9 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cli-tweet"              # PyPI name
-version = "0.1.0"
+version = "1.0.0"
 description = "A small CLI tool to send tweets from your terminal."
 readme = "README.md"
+readme-content-type = "text/markdown"
+keywords = ["twitter", "cli", "tweepy", "tweet"]
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
