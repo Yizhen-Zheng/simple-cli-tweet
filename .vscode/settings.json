@@ -1,6 +1,0 @@
-{
-  "[dotenv]": {
-    "windsurf.suggestions.enabled": false,
-    "editor.inlineSuggest.enabled": false
-  }
-}
