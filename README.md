@@ -79,6 +79,21 @@ If any value is missing, `cli_tweet` will prompt for it and store it in the `.en
   cli_tweet "Hello world from the terminal"
   ```
 
+- List your own recent posts (newest first, defaults to 5):
+
+  ```bash
+  cli_tweet list
+  cli_tweet list 10   # fetch up to 10 (max 100)
+  ```
+
+- Comment on one of your own posts (reply):
+
+  ```bash
+  cli_tweet reply <tweet_id> "Thanks for the feedback!"
+  # alias:
+  cli_tweet comment <tweet_id> "..."
+  ```
+
 ## Notes
 
 - Tweets are limited to 280 characters; the interactive mode shows how many characters you have left or if you are over.
